@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "582356298355",
+    "project_id": "freestore-343bb",
+    "storage_bucket": "freestore-343bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582356298355:android:8fbd5d00b2ac896db21806",
+        "android_client_info": {
+          "package_name": "com.achintya.freestore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOv0smS1Z8iHzgPRkFk81Qcb6OOoeU2Cc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
