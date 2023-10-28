@@ -57,7 +57,7 @@ class _MintingScreenState extends State<MintingScreen> {
             backgroundColor:
                 ColorConstants.appColor, // Change the app bar color
             title: Text(
-              'QR Data List',
+              'Public Files',
               style: TextStyle(color: Colors.white),
             ),
           ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:giga_share/models/post/postmodel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class QRList extends StatefulWidget {
   @override
   _QRListState createState() => _QRListState();
@@ -20,14 +19,16 @@ class _QRListState extends State<QRList> {
   }
 
   Future<void> fetchQRData() async {
-    DatabaseReference dataLinkRef = FirebaseDatabase.instance.reference().child('dataLink');
+    DatabaseReference dataLinkRef =
+        FirebaseDatabase.instance.reference().child('dataLink');
     DatabaseEvent event = await dataLinkRef.once();
 
     DataSnapshot snapshot = event.snapshot;
 
     qrDataList.clear();
     if (snapshot.value != null) {
-      Map<dynamic, dynamic> values = Map<dynamic, dynamic>.from(snapshot.value as Map);
+      Map<dynamic, dynamic> values =
+          Map<dynamic, dynamic>.from(snapshot.value as Map);
       values.forEach((key, value) {
         qrDataList.add(QRData(value.toString()));
       });
@@ -39,7 +40,7 @@ class _QRListState extends State<QRList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Data List'),
+        title: Text('Public'),
       ),
       body: ListView.builder(
         itemCount: qrDataList.length,
