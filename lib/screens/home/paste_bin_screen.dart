@@ -46,7 +46,10 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
               child: Text(
                 'Create and share any text format on IPFS.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
             ),
             const SizedBox(
@@ -54,7 +57,10 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
             ),
             const Text(
               'FILENAME (OPTIONAL)',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 10,
@@ -89,7 +95,10 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
             ),
             const Text(
               'CONTENT',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 10,
@@ -133,8 +142,8 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               onPressed: () async {
-                await TextFileService.uploadTextFile(
-                    context, _textController.text, _fileNameController.text);
+                await TextFileService.uploadTextFile(context,
+                    _textController.text, _fileNameController.text, '');
                 _textController.text = '';
                 _fileNameController.text = '';
               },

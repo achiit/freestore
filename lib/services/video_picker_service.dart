@@ -21,7 +21,7 @@ class VideoPickerService {
   }
 
 //PICKER
-  static Future<XFile?> pickVideo(BuildContext context) async {
+  static Future<XFile?> pickVideo(BuildContext context,String username) async {
     final ImagePicker _picker = ImagePicker();
 
     try {
@@ -62,7 +62,7 @@ class VideoPickerService {
         Navigator.pop(context);
 
         // Take to QrScreen
-        await Get.to(() => QrScreen(cid: cid));
+        await Get.to(() => QrScreen(cid: cid,username: username,));
 
         //Return Path
         return video;

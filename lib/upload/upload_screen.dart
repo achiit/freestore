@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:giga_share/resources/color_constants.dart';
 import 'package:giga_share/resources/image_resources.dart';
@@ -16,6 +18,24 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   final _textController = TextEditingController();
+  String getUserName = '';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    super.initState();
+    DatabaseReference userReference = FirebaseDatabase.instance
+        .ref()
+        .child('users/${_auth.currentUser!.uid}');
+
+    final user = userReference.once().then((DatabaseEvent databaseEvent) {
+      final value = databaseEvent.snapshot.value;
+
+      setState(() {
+        getUserName = (value as Map)['fullname'].toString();
+      });
+      print("the username is $getUserName");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +66,12 @@ class _UploadScreenState extends State<UploadScreen> {
             Expanded(
               child: InkWell(
                 onTap: () async {
-                  await ImagePickerService.pickImage(context);
+                  await ImagePickerService.pickImage(context, getUserName);
                 },
                 child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
                   child: Stack(
                     children: [
                       Positioned(
@@ -71,11 +92,13 @@ class _UploadScreenState extends State<UploadScreen> {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                                  topRight: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10)),
                             ),
                           ),
                           onPressed: () async {
-                            await ImagePickerService.pickImage(context);
+                            await ImagePickerService.pickImage(
+                                context, getUserName);
                           },
                           label: Text(
                             'Upload Photo',
@@ -85,8 +108,8 @@ class _UploadScreenState extends State<UploadScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          icon: Icon(
-                            Icons.image, size: 16, color: Colors.white),
+                          icon:
+                              Icon(Icons.image, size: 16, color: Colors.white),
                         ),
                       ),
                     ],
@@ -98,11 +121,12 @@ class _UploadScreenState extends State<UploadScreen> {
             Expanded(
               child: InkWell(
                 onTap: () async {
-                  await VideoPickerService.pickVideo(context);
+                  await VideoPickerService.pickVideo(context, getUserName);
                 },
                 child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
                   child: Stack(
                     children: [
                       Positioned(
@@ -123,11 +147,13 @@ class _UploadScreenState extends State<UploadScreen> {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                                  topRight: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10)),
                             ),
                           ),
                           onPressed: () async {
-                            await VideoPickerService.pickVideo(context);
+                            await VideoPickerService.pickVideo(
+                                context, getUserName);
                           },
                           label: Text(
                             'Upload Video',
@@ -137,8 +163,8 @@ class _UploadScreenState extends State<UploadScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          icon: Icon(
-                              Icons.video_call_rounded, size: 16, color: Colors.white),
+                          icon: Icon(Icons.video_call_rounded,
+                              size: 16, color: Colors.white),
                         ),
                       ),
                     ],
@@ -150,11 +176,12 @@ class _UploadScreenState extends State<UploadScreen> {
             Expanded(
               child: InkWell(
                 onTap: () async {
-                  await FilePickerService.pickFile(context);
+                  await FilePickerService.pickFile(context, getUserName);
                 },
                 child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
                   child: Stack(
                     children: [
                       Positioned(
@@ -175,11 +202,13 @@ class _UploadScreenState extends State<UploadScreen> {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                                  topRight: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10)),
                             ),
                           ),
                           onPressed: () async {
-                            await FilePickerService.pickFile(context);
+                            await FilePickerService.pickFile(
+                                context, getUserName);
                           },
                           label: Text(
                             'Upload File',

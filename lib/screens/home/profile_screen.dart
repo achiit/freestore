@@ -8,6 +8,7 @@ import 'package:giga_share/profile/about.dart';
 import 'package:giga_share/profile/accounts.dart';
 import 'package:giga_share/resources/color_constants.dart';
 import 'package:giga_share/screens/auth/login_screen.dart';
+import 'package:giga_share/screens/home/myposts/myfiles.dart';
 import 'package:giga_share/widgets/custom_profile_tile.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:wiredash/wiredash.dart';
@@ -30,8 +31,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    DatabaseReference userReference =
-        FirebaseDatabase.instance.ref().child('users/${_auth.currentUser!.uid}');
+    DatabaseReference userReference = FirebaseDatabase.instance
+        .ref()
+        .child('users/${_auth.currentUser!.uid}');
 
     final user = userReference.once().then((DatabaseEvent databaseEvent) {
       final value = databaseEvent.snapshot.value;
@@ -126,6 +128,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 CustomProfileTile(
+                  icon: Icons.feed,
+                  text: 'My Posts',
+                  onPressed: () async {
+                    //await _auth.signOut();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyPost()));
+                  },
+                ),
+                CustomProfileTile(
                   icon: Icons.person_add,
                   text: 'Invite a Friend',
                   onPressed: () {
@@ -151,7 +162,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () async {
                     await _auth.signOut();
                     Get.offUntil(
-                        MaterialPageRoute(builder: (context) => LoginScreen()), (route) => false);
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (route) => false);
                   },
                 ),
               ],

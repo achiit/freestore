@@ -14,16 +14,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
-class MintingScreen extends StatefulWidget {
+class MyPost extends StatefulWidget {
   @override
-  State<MintingScreen> createState() => _MintingScreenState();
+  State<MyPost> createState() => _MyPostState();
 }
 
-class _MintingScreenState extends State<MintingScreen> {
+class _MyPostState extends State<MyPost> {
   //List<QRData> qrDataList = [];
   String downloadedFilePath = "";
   bool downloading = false;
-  List<QRData> qrDataList = [];
+  List<String> qrDataList = [];
   @override
   void initState() {
     super.initState();
@@ -32,34 +32,37 @@ class _MintingScreenState extends State<MintingScreen> {
 
   Future<void> fetchQRData() async {
     print("the function is called");
-    DatabaseReference dataLinkRef =
-        FirebaseDatabase.instance.reference().child('dataLink');
+    final _auth = FirebaseAuth.instance;
+    final currentUser = _auth.currentUser;
+    print("the current usr is ${currentUser!.uid}");
+    if (currentUser != null) {
+      DatabaseReference dataLinkRef = FirebaseDatabase.instance
+          .reference()
+          .child('users/${currentUser.uid}/myposts');
 
-    DatabaseEvent event = await dataLinkRef.once();
+      DatabaseEvent event = await dataLinkRef.once();
 
-    DataSnapshot snapshot = event.snapshot;
-    qrDataList.clear();
+      DataSnapshot snapshot = event.snapshot;
+      print("the snapshot is ${snapshot.value}");
+      if (snapshot.value != null && snapshot.value is Map) {
+        // Assuming that snapshot.value is a Map with keys and URLs.
+        Map<dynamic, dynamic> dataMap =
+            Map<dynamic, dynamic>.from(snapshot.value as Map);
+        qrDataList.clear();
+        dataMap.forEach((key, value) {
+          if (value is String) {
+            qrDataList.add(value);
+          }
+        });
+      } else {
+        print("Data format is not as expected");
+      }
 
-    if (snapshot.value != null) {
-      Map<dynamic, dynamic> values =
-          Map<dynamic, dynamic>.from(snapshot.value as Map);
-      values.forEach((key, value) {
-        if (value is Map) {
-          String username = value['username'] ?? 'Unknown';
-          String title = value['title'] ?? 'No Title';
-          String caption = value['caption'] ?? 'No Caption';
-          String url = value['url'].toString();
-
-          qrDataList.add(QRData(username, title, caption, url));
-        } else {
-          print('Invalid data format: $value');
-        }
-      });
+      print("the qr list is ${qrDataList}");
+      setState(() {});
     }
-    print("the qr list is ${qrDataList[0].title}");
-    setState(() {});
   }
-  
+
   @override
   @override
   Widget build(BuildContext context) {
@@ -72,7 +75,7 @@ class _MintingScreenState extends State<MintingScreen> {
             backgroundColor:
                 ColorConstants.appColor, // Change the app bar color
             title: Text(
-              'Public Files',
+              'My Files',
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -88,7 +91,7 @@ class _MintingScreenState extends State<MintingScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: FutureBuilder(
-                          future: loadImage(qrDataList[index].url),
+                          future: loadImage(qrDataList[index]),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
@@ -104,44 +107,44 @@ class _MintingScreenState extends State<MintingScreen> {
                                 // ),
                                 child: Column(
                                   children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          child: Text(
-                                            ' ${qrDataList[index].url[0].toUpperCase()}',
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 8,
-                                        ),
-                                        Text(
-                                          ' ${qrDataList[index].url.toUpperCase()}',
-                                          style: GoogleFonts.inter(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                        ),
-                                      ],
-                                    ),
+                                    // Row(
+                                    //   children: [
+                                    //     CircleAvatar(
+                                    //       child: Text(
+                                    //         ' ${qrDataList[index].url[0].toUpperCase()}',
+                                    //       ),
+                                    //     ),
+                                    //     SizedBox(
+                                    //       width: 8,
+                                    //     ),
+                                    //     Text(
+                                    //       ' ${qrDataList[index].url.toUpperCase()}',
+                                    //       style: GoogleFonts.inter(
+                                    //           fontWeight: FontWeight.bold,
+                                    //           fontSize: 20),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                     SizedBox(
                                       width: 18,
                                     ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 20.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '${qrDataList[index].username}',
-                                            textAlign: TextAlign.start,
-                                            style:
-                                                GoogleFonts.inter(fontSize: 20),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    // Padding(
+                                    //   padding:
+                                    //       const EdgeInsets.only(left: 20.0),
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Text(
+                                    //         '${qrDataList[index].username}',
+                                    //         textAlign: TextAlign.start,
+                                    //         style:
+                                    //             GoogleFonts.inter(fontSize: 20),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
 
                                     Image.network(
-                                      qrDataList[index].caption,
+                                      qrDataList[index],
                                       errorBuilder:
                                           (context, error, stackTrace) {
                                         return Column(
@@ -162,15 +165,15 @@ class _MintingScreenState extends State<MintingScreen> {
                                       },
                                     ),
                                     //THIS IS THE CAPTION
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '${qrDataList[index].title[0].toUpperCase()}${qrDataList[index].title.substring(1)}',
-                                          style:
-                                              GoogleFonts.inter(fontSize: 20),
-                                        ),
-                                      ],
-                                    ),
+                                    // Row(
+                                    //   children: [
+                                    //     Text(
+                                    //       '${qrDataList[index].title[0].toUpperCase()}${qrDataList[index].title.substring(1)}',
+                                    //       style:
+                                    //           GoogleFonts.inter(fontSize: 20),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                   ],
                                 ),
                               );
@@ -193,8 +196,7 @@ class _MintingScreenState extends State<MintingScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              launch(
-                                  qrDataList[index].caption); // Open in browser
+                              launch(qrDataList[index]); // Open in browser
                             },
                             child: Text('Open in Browser'),
                           ),
@@ -202,7 +204,7 @@ class _MintingScreenState extends State<MintingScreen> {
                           ElevatedButton(
                             onPressed: () {
                               downloadFromIPFS(
-                                  qrDataList[index].caption,
+                                  qrDataList[index],
                                   qrDataList[index]
                                       .hashCode); // Download the image
                             },

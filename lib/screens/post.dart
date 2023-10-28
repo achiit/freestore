@@ -19,20 +19,32 @@ class _QRListState extends State<QRList> {
   }
 
   Future<void> fetchQRData() async {
+    print("the function is called");
     DatabaseReference dataLinkRef =
         FirebaseDatabase.instance.reference().child('dataLink');
+
     DatabaseEvent event = await dataLinkRef.once();
 
     DataSnapshot snapshot = event.snapshot;
-
     qrDataList.clear();
+
     if (snapshot.value != null) {
       Map<dynamic, dynamic> values =
           Map<dynamic, dynamic>.from(snapshot.value as Map);
       values.forEach((key, value) {
-        qrDataList.add(QRData(value.toString()));
+        if (value is Map) {
+          String username = value['username'] ?? 'Unknown';
+          String title = value['title'] ?? 'No Title';
+          String caption = value['caption'] ?? 'No Caption';
+          String url = value['url'].toString();
+
+          qrDataList.add(QRData(username, title, caption, url));
+        } else {
+          print('Invalid data format: $value');
+        }
       });
     }
+    print("the qr list is ${qrDataList[0].caption}");
     setState(() {});
   }
 
@@ -45,13 +57,13 @@ class _QRListState extends State<QRList> {
       body: ListView.builder(
         itemCount: qrDataList.length,
         itemBuilder: (context, index) {
-          return buildQRContainer(qrDataList[index].url);
+          return buildQRContainer(qrDataList[index]);
         },
       ),
     );
   }
 
-  Widget buildQRContainer(String url) {
+  Widget buildQRContainer(QRData qrData) {
     return Container(
       margin: EdgeInsets.all(10),
       padding: EdgeInsets.all(10),
@@ -59,7 +71,7 @@ class _QRListState extends State<QRList> {
         border: Border.all(),
       ),
       child: Image.network(
-        url,
+        qrData.caption,
         width: 200,
         height: 200,
         errorBuilder: (context, error, stackTrace) {
@@ -70,7 +82,7 @@ class _QRListState extends State<QRList> {
               ElevatedButton(
                 onPressed: () {
                   // Redirect to a web browser (Chrome) with the URL
-                  launch(url);
+                  launch(qrData.caption);
                 },
                 child: Text('Open in Browser'),
               ),

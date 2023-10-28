@@ -14,6 +14,7 @@ import 'package:giga_share/config/config.dart';
 import 'package:giga_share/widgets/custom_button.dart';
 import 'package:giga_share/widgets/custom_divider.dart';
 import 'package:giga_share/widgets/progress_dialog.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,13 +23,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 class QrScreen extends StatefulWidget {
   final String cid;
-  const QrScreen({Key? key, required this.cid}) : super(key: key);
+  final String username;
+  const QrScreen({Key? key, required this.cid, required this.username})
+      : super(key: key);
 
   @override
   State<QrScreen> createState() => _QrScreenState();
 }
 
 class _QrScreenState extends State<QrScreen> {
+  TextEditingController titleController = TextEditingController();
+
+  TextEditingController captionController = TextEditingController();
   GlobalKey globalKey = GlobalKey();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -41,7 +47,7 @@ class _QrScreenState extends State<QrScreen> {
       if (!await launch(qrUrl)) throw 'Could not launch $qrUrl';
     }
 
-    void uploadUrl() async {
+    void uploadUrl(String title, String caption) async {
       try {
         setState(() {
           isUploading = true; // Start the upload, set isUploading to true
@@ -51,7 +57,12 @@ class _QrScreenState extends State<QrScreen> {
             FirebaseDatabase.instance.reference().child('dataLink');
         DatabaseReference newqrUpload = dataLinkRef.push();
 
-        await newqrUpload.set(qrUrl);
+        newqrUpload.set({
+          'username': widget.username,
+          'title': title,
+          'caption': caption,
+          'url': qrUrl,
+        });
 
         // If the URL is successfully uploaded, show a success message
         Fluttertoast.showToast(
@@ -147,7 +158,19 @@ class _QrScreenState extends State<QrScreen> {
                 color: Colors.black,
               ),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 25.0,
+                vertical: 15.0,
+              ),
+              child: CustomButton(
+                title: 'Download QR',
+                color: Colors.black87,
+                onPressed: _downloadQr,
+              ),
+            ),
+            SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.only(
                 left: 15,
@@ -243,13 +266,13 @@ class _QrScreenState extends State<QrScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
                     onTap: _launchURL,
                     child: Container(
                       height: 50,
-                      width: MediaQuery.of(context).size.width * 0.12,
+                      width: MediaQuery.of(context).size.width * 0.17,
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(12),
@@ -266,13 +289,16 @@ class _QrScreenState extends State<QrScreen> {
                       ),
                     ),
                   ),
+                  SizedBox(
+                    width: 20,
+                  ),
                   InkWell(
                     onTap: () {
                       _copyTextToClipboard(qrUrl);
                     },
                     child: Container(
                       height: 50,
-                      //width: MediaQuery.of(context).size.width * 0.15,
+                      width: MediaQuery.of(context).size.width * 0.4,
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(12),
@@ -292,48 +318,120 @@ class _QrScreenState extends State<QrScreen> {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      uploadUrl();
-                    },
-                    child: Container(
-                      height: 50,
-                      //width: MediaQuery.of(context).size.width * 0.15,
-                      decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            'Share as post..',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
+            SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: CustomDivider(),
             ),
+            SizedBox(height: 30),
+            Text(
+              "Wanna share this as a post",
+              style:
+                  GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 25.0,
-                vertical: 15.0,
+              padding: const EdgeInsets.all(20.0),
+              child: TextFormField(
+                controller: titleController,
+                //keyboardType: keyboard,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                  labelText: "title",
+                  hintText: "enter title you want to show",
+                  hintStyle:
+                      GoogleFonts.inter(fontSize: 15, color: Colors.grey),
+                  labelStyle:
+                      GoogleFonts.inter(fontSize: 17, color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
               ),
-              child: CustomButton(
-                title: 'Download QR',
-                color: Colors.black87,
-                onPressed: _downloadQr,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: TextFormField(
+                controller: captionController,
+                //keyboardType: keyboard,
+                maxLines: 4,
+                maxLength: 200,
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                  labelText: "caption",
+                  hintText: "caption for your post",
+                  hintStyle:
+                      GoogleFonts.inter(fontSize: 15, color: Colors.grey),
+                  labelStyle:
+                      GoogleFonts.inter(fontSize: 17, color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                uploadUrl(titleController.text, captionController.text);
+              },
+              child: Container(
+                height: 50,
+                //width: MediaQuery.of(context).size.width * 0.15,
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'Share as post..',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
