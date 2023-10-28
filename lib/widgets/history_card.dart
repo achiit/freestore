@@ -17,8 +17,7 @@ class _HistoryCardState extends State<HistoryCard> {
   UserModel transaction = UserModel();
 
   void _launchURL(url) async {
-    if (!await launch(url))
-      throw 'Could not launch ${url}';
+    if (!await launch(url)) throw 'Could not launch ${url}';
   }
 
   @override
@@ -32,7 +31,9 @@ class _HistoryCardState extends State<HistoryCard> {
                 'No transaction history',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           )
@@ -55,7 +56,7 @@ class _HistoryCardState extends State<HistoryCard> {
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.all(10),
-          height: 60,
+          height: 80,
           child: Row(
             children: [
               SizedBox(width: 5),
@@ -68,7 +69,9 @@ class _HistoryCardState extends State<HistoryCard> {
                 ),
                 child: Center(
                   child: Icon(
-                    (history.received == false) ? Icons.upload_file_rounded : Icons.file_download,
+                    (history.received == false)
+                        ? Icons.upload_file_rounded
+                        : Icons.file_download,
                     color: Colors.white,
                     size: 19,
                   ),

@@ -3,21 +3,21 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:giga_share/config/config.dart';
 import 'package:giga_share/widgets/custom_button.dart';
 import 'package:giga_share/widgets/custom_divider.dart';
+import 'package:giga_share/widgets/progress_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
 class QrScreen extends StatefulWidget {
@@ -35,9 +35,38 @@ class _QrScreenState extends State<QrScreen> {
   @override
   Widget build(BuildContext context) {
     final String qrUrl = ipfsURL + widget.cid;
+    bool isUploading = false;
 
     void _launchURL() async {
       if (!await launch(qrUrl)) throw 'Could not launch $qrUrl';
+    }
+
+    void uploadUrl() async {
+      try {
+        setState(() {
+          isUploading = true; // Start the upload, set isUploading to true
+        });
+
+        DatabaseReference dataLinkRef =
+            FirebaseDatabase.instance.reference().child('dataLink');
+        DatabaseReference newqrUpload = dataLinkRef.push();
+
+        await newqrUpload.set(qrUrl);
+
+        // If the URL is successfully uploaded, show a success message
+        Fluttertoast.showToast(
+          msg: 'URL uploaded successfully',
+        );
+      } catch (e) {
+        // If there's an error, show an error message
+        Fluttertoast.showToast(
+          msg: 'Error uploading URL: $e',
+        );
+      } finally {
+        setState(() {
+          isUploading = false; // Finish the upload, set isUploading to false
+        });
+      }
     }
 
     void _downloadQr() async {
@@ -64,6 +93,16 @@ class _QrScreenState extends State<QrScreen> {
           });
         }
       }
+    }
+
+    void _copyTextToClipboard(String text) async {
+      await Clipboard.setData(ClipboardData(text: text));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Text copied to clipboard'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
 
     return Scaffold(
@@ -93,7 +132,7 @@ class _QrScreenState extends State<QrScreen> {
               child: QrImageView(
                 data: qrUrl,
                 size: 280,
-               gapless: false,
+                gapless: false,
                 version: QrVersions.auto,
                 //backgroundColor: Colors.white,
                 //errorCorrectionLevel: QrErrorCorrectLevel.L,
@@ -198,11 +237,19 @@ class _QrScreenState extends State<QrScreen> {
                     ),
                   ),
                   SizedBox(width: 10),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   InkWell(
                     onTap: _launchURL,
                     child: Container(
                       height: 50,
-                      width: MediaQuery.of(context).size.width * 0.14,
+                      width: MediaQuery.of(context).size.width * 0.12,
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(12),
@@ -214,6 +261,58 @@ class _QrScreenState extends State<QrScreen> {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      _copyTextToClipboard(qrUrl);
+                    },
+                    child: Container(
+                      height: 50,
+                      //width: MediaQuery.of(context).size.width * 0.15,
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'Copy URL',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      uploadUrl();
+                    },
+                    child: Container(
+                      height: 50,
+                      //width: MediaQuery.of(context).size.width * 0.15,
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'Share as post..',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),

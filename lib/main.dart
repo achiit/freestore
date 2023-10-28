@@ -6,8 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:giga_share/models/post/postmodel.dart';
 import 'package:giga_share/models/user_model.dart';
 import 'package:giga_share/screens/onboarding_screen.dart';
+import 'package:giga_share/screens/post.dart';
 import 'package:giga_share/wiredash.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -89,7 +91,7 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        home: OnBoardingScreen(),
+        home: OnBoardingScreen()/* QRList() */,
       ),
     );
   }

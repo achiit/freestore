@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 130,
+              height: 150,
               width: double.infinity,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),

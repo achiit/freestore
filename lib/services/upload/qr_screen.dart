@@ -159,8 +159,8 @@ class _QrScreenState extends State<QrScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(
-                left: 15,
-                right: 15,
+                left: 11,
+                right: 11,
                 bottom: 15,
                 top: 10,
               ),
@@ -202,7 +202,7 @@ class _QrScreenState extends State<QrScreen> {
                     onTap: _launchURL,
                     child: Container(
                       height: 50,
-                      width: MediaQuery.of(context).size.width * 0.14,
+                      width: MediaQuery.of(context).size.width * 0.13,
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(12),
