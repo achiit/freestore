@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:giga_share/models/post/postmodel.dart';
 import 'package:giga_share/models/user_model.dart';
@@ -28,6 +29,8 @@ final emulatorHost =
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+await FlutterDownloader.initialize();
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
