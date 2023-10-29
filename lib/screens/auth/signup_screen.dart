@@ -47,16 +47,15 @@ class _SignupScreenState extends State<SignupScreen> {
   String? urlDownload;
 
   void showSnackBar(String title) {
-  final snackBar = SnackBar(
-    content: Text(
-      title,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 15),
-    ),
-  );
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
-
+    final snackBar = SnackBar(
+      content: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 15),
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   void registerUser() async {
     // Dialog box
@@ -80,12 +79,14 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     if (user != null) {
-      DatabaseReference newUserReference =
-          FirebaseDatabase.instance.ref().child('users/${_auth.currentUser!.uid}');
+      DatabaseReference newUserReference = FirebaseDatabase.instance
+          .ref()
+          .child('users/${_auth.currentUser!.uid}');
 
       // String uploadID = newUserReference.push().key!;
 
-      final fileName = kIsWeb ? '${DateTime.now()}' : path.basename(_image.toString());
+      final fileName =
+          kIsWeb ? '${DateTime.now()}' : path.basename(_image.toString());
       final destination = 'files/$fileName';
       try {
         task = kIsWeb
@@ -119,30 +120,57 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xff010723),
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
+      body: SingleChildScrollView(
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            //mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Image.asset(
-                    ImageResources.appTextLogoImage,
-                  ),
-                ),
+              Image.asset(
+                ImageResources.appTextLogoImage,
+                //height: 300,
               ),
-              SizedBox(height: 10),
-              Text(
-                "Create Your Account",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: ColorConstants.appColor,
-                  fontSize: 22,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Make your own ID Card",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 86, 122, 152),
+                                fontSize: 27,
+                              ),
+                            ),
+                            Text(
+                              "Welcome to Social Hub",
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: const Color.fromRGBO(255, 255, 255, 1),
+                                fontSize: 22,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Image.asset(
+                        "assets/images/logo.png",
+                        height: 150,
+                      ),
+                    )
+                  ],
                 ),
               ),
               Padding(
@@ -174,117 +202,255 @@ class _SignupScreenState extends State<SignupScreen> {
                           }
                         },
                         child: Container(
-                            height: 70,
-                            width: 70,
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(500),
-                              border: Border.all(color: Colors.black54, width: 2),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(35),
-                              child: (_image != null || _webBytes != null)
-                                  ? kIsWeb
-                                      ? Image.memory(_webBytes!)
-                                      : Image.file(File(_image!.path))
-                                  : Image.network(
-                                      'https://publish.one37pm.net/wp-content/uploads/2022/03/IPFS-uni.png?fit=1600%2C707',
-                                      fit: BoxFit.cover,
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 43, 53, 98),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 100,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(500),
+                                    border: Border.all(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(35),
+                                    child: (_image != null || _webBytes != null)
+                                        ? kIsWeb
+                                            ? Image.memory(_webBytes!)
+                                            : Image.file(File(_image!.path))
+                                        : Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          ),
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                                Flexible(
+                                  child: Container(
+                                    child: Text(
+                                      "Upload your profile picture",
+                                      softWrap: true,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25,
+                                      ),
                                     ),
-                            )),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(height: 20),
                     TextField(
                       controller: fullNameController,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.text_fields),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         labelText: 'Full Name',
-                        labelStyle: TextStyle(fontSize: 14),
+                        labelStyle: TextStyle(
+                            fontSize: 14, color: Colors.black), // Label color
+                        hintText: 'Enter your full name', // Optional hint text
                         hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
+                            color: Colors.black.withOpacity(0.5),
+                            fontSize: 10), // Hint color
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.5), // White border when focused
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.0), // White border when not focused
+                        ),
+                        filled: true,
+                        fillColor: Colors.white, // Fill color
                       ),
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                          fontSize: 14, color: Colors.black), // Text color
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 30),
                     TextField(
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.email),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         labelText: 'Email Address',
-                        labelStyle: TextStyle(fontSize: 14),
+                        labelStyle: TextStyle(
+                            fontSize: 14, color: Colors.black), // Label color
+                        hintText: 'Enter your email', // Optional hint text
                         hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
+                            color: Colors.black.withOpacity(0.5),
+                            fontSize: 10), // Hint color
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.5), // White border when focused
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.0), // White border when not focused
+                        ),
+                        filled: true,
+                        fillColor: Colors.white, // Fill color
                       ),
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                          fontSize: 14, color: Colors.black), // Text color
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 30),
                     TextField(
                       controller: passwordController,
                       obscureText: true,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.password),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
                         labelText: 'Password',
-                        labelStyle: TextStyle(fontSize: 14),
+                        labelStyle: TextStyle(
+                            fontSize: 14, color: Colors.black), // Label color
+                        hintText: 'Enter your password', // Optional hint text
                         hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
+                            color: Colors.black.withOpacity(0.5),
+                            fontSize: 10), // Hint color
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.5), // White border when focused
                         ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.0), // White border when not focused
+                        ),
+                        filled: true,
+                        fillColor: Colors.white, // Fill color
                       ),
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                          fontSize: 14, color: Colors.black), // Text color
                     ),
                     SizedBox(height: 40),
-                    CustomButton(
-                      title: 'REGISTER',
-                      color: Colors.blueAccent,
-                      onPressed: () async {
-                        // Network checking
-                        var connectivityResult = await Connectivity().checkConnectivity();
-                        if (connectivityResult != ConnectivityResult.mobile &&
-                            connectivityResult != ConnectivityResult.wifi) {
-                          showSnackBar('No Internet connection');
-                          return;
-                        }
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            title: 'LOGIN',
+                            color: Colors.white,
+                            textColor: Colors.black,
+                            onPressed: () {
+                              // Use a custom route with a swipe animation
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  transitionDuration:
+                                      Duration(milliseconds: 500),
+                                  pageBuilder:
+                                      (context, animation, secondaryAnimation) {
+                                    return WillPopScope(
+                                      onWillPop: () async {
+                                        // Prevent the user from going back
+                                        return false;
+                                      },
+                                      child: LoginScreen(),
+                                    );
+                                  },
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeInOut;
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+                                    var offsetAnimation =
+                                        animation.drive(tween);
+                                    return SlideTransition(
+                                      position: offsetAnimation,
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: CustomButton(
+                            title: 'Register',
+                            color: Colors.blueAccent,
+                            onPressed: () async {
+                              // Network checking
+                              var connectivityResult =
+                                  await Connectivity().checkConnectivity();
+                              if (connectivityResult !=
+                                      ConnectivityResult.mobile &&
+                                  connectivityResult !=
+                                      ConnectivityResult.wifi) {
+                                showSnackBar('No Internet connection');
+                                return;
+                              }
 
-                        // Textfield validation
-                        if (fullNameController.text.length < 3) {
-                          showSnackBar('Please enter your full name');
-                          return;
-                        }
+                              // Textfield validation
+                              if (fullNameController.text.length < 3) {
+                                showSnackBar('Please enter your full name');
+                                return;
+                              }
 
-                        if (!emailController.text.contains('@')) {
-                          showSnackBar('Please enter a valid email Address');
-                          return;
-                        }
+                              if (!emailController.text.contains('@')) {
+                                showSnackBar(
+                                    'Please enter a valid email Address');
+                                return;
+                              }
 
-                        if (passwordController.text.length <= 8) {
-                          showSnackBar('Password must be at least 8 characters');
-                          return;
-                        }
+                              if (passwordController.text.length <= 8) {
+                                showSnackBar(
+                                    'Password must be at least 8 characters');
+                                return;
+                              }
 
-                        if (kIsWeb) {
-                          if (_webBytes == null) {
-                            showSnackBar('Upload your images');
-                            return;
-                          }
-                        } else {
-                          if (_image == null) {
-                            showSnackBar('Upload your images');
-                            return;
-                          }
-                        }
+                              if (kIsWeb) {
+                                if (_webBytes == null) {
+                                  showSnackBar('Upload your images');
+                                  return;
+                                }
+                              } else {
+                                if (_image == null) {
+                                  showSnackBar('Upload your images');
+                                  return;
+                                }
+                              }
 
-                        registerUser();
-                      },
+                              registerUser();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
               MaterialButton(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 10),
                 onPressed: () {
                   Get.offAll(LoginScreen());
                 },

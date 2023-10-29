@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -20,8 +22,25 @@ class VideoPickerService {
     Hive.close();
   }
 
+  static Future<void> addURLToUserPosts(String url) async {
+    final _auth = FirebaseAuth.instance;
+    final currentUser = _auth.currentUser;
+    print("the currentuser is ${currentUser!.uid}");
+    if (currentUser != null) {
+      final DatabaseReference userReference = FirebaseDatabase.instance
+          .reference()
+          .child('users/${currentUser.uid}/myposts');
+
+      // Push the new URL to the "myposts" node
+      final newPostRef = userReference.push();
+      newPostRef.set(url);
+
+      print('URL added to user posts: $url');
+    }
+  }
+
 //PICKER
-  static Future<XFile?> pickVideo(BuildContext context) async {
+  static Future<XFile?> pickVideo(BuildContext context, String username,String userid) async {
     final ImagePicker _picker = ImagePicker();
 
     try {
@@ -60,9 +79,13 @@ class VideoPickerService {
 
         // Popping out the dialog box
         Navigator.pop(context);
-
+        addURLToUserPosts(ipfsURL + cid);
         // Take to QrScreen
-        await Get.to(() => QrScreen(cid: cid));
+        await Get.to(() => QrScreen(
+              cid: cid,
+              username: username,
+              userid: userid,
+            ));
 
         //Return Path
         return video;

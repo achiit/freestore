@@ -7,9 +7,11 @@ class CustomHomeButton extends StatelessWidget {
   final String text;
   final Function() onPressed;
   final IconData icon;
+  final Color color;
 
   const CustomHomeButton({
     Key? key,
+    required this.color,
     required this.icon,
     required this.text,
     required this.onPressed,
@@ -23,20 +25,27 @@ class CustomHomeButton extends StatelessWidget {
         GestureDetector(
           onTap: onPressed,
           child: Container(
+            height: 150,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              /*gradient: LinearGradient(
+                color: color,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                )
+                /*gradient: LinearGradient(
                 colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColor],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),*/
-            ),
+                ),
             child: Center(
               child: Icon(
                 icon,
-                color: ColorConstants.messageErrorBgColor,
+                size: 50,
+                color: Colors.white.withOpacity(0.5),
               ),
             ),
           ),

@@ -6,12 +6,38 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:giga_share/models/introscreenmodel/intromodel.dart';
+import 'package:giga_share/models/post/postmodel.dart';
 import 'package:giga_share/models/user_model.dart';
 import 'package:giga_share/screens/onboarding_screen.dart';
+import 'package:giga_share/screens/onboardingscreen.dart';
+import 'package:giga_share/screens/post.dart';
+import 'package:giga_share/viewmodel/introviewmodel.dart';
 import 'package:giga_share/wiredash.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
+final List<OnboardingModel> onboardingData = [
+  OnboardingModel(
+    title: 'Your Digital Vault',
+    description: "Store and Secure Your Unlimited Precious Memories",
+    imagePath:
+        'assets/images/upload_video_img1.png', // Replace with your image paths
+  ),
+  OnboardingModel(
+    title: 'Private Sharing',
+    description: 'Share Moments Safely, Privately with Loved Ones as QRs',
+    imagePath: 'assets/images/secure.png', // Replace with your image paths
+  ),
+  OnboardingModel(
+    title: 'Monetize Your Creativity',
+    description: 'Turn Your Passion into Profit with Subscriptions',
+    imagePath: 'assets/images/monetize1.png', // Replace with your image paths
+  ),
+
+  // Add more OnboardingModel instances for additional screens
+];
 // Change to false to use live database instance.
 const USE_DATABASE_EMULATOR = false;
 // The port we've set the Firebase Database emulator to run on via the
@@ -58,7 +84,11 @@ Future<void> main() async {
     FirebaseDatabase.instance.useDatabaseEmulator(emulatorHost, emulatorPort);
   }
 
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider<OnboardingViewModel>(
+      create: (context) => OnboardingViewModel(),
+    ),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -75,7 +105,7 @@ class MyApp extends StatelessWidget {
         title: 'Box Share',
         theme: ThemeData(
           fontFamily: 'Montserrat',
-          primaryColor: Colors.blueAccent,
+          primaryColor: Colors.white,
           cardTheme: const CardTheme(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -89,7 +119,7 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        home: OnBoardingScreen(),
+        home: OnboardingScreen(onboardingData: onboardingData) /* QRList() */,
       ),
     );
   }

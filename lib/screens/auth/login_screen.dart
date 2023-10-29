@@ -83,91 +83,173 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       key: scaffoldKey,
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(child: Image.asset(ImageResources.loginImage)),
-              Text(
-                'SIGN IN',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                  fontSize: 25,
+      backgroundColor: Color(0xff010723),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  ImageResources.loginImage,
+                  height: 200,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email Address',
-                        labelStyle: TextStyle(fontSize: 14),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
-                      ),
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(fontSize: 14),
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                        ),
-                      ),
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 40),
-                    CustomButton(
-                      title: 'LOGIN',
-                      color: Colors.blueAccent,
-                      onPressed: () async {
-                        // Network checking
-                        var connectivityResult = await Connectivity().checkConnectivity();
-                        if (connectivityResult != ConnectivityResult.mobile &&
-                            connectivityResult != ConnectivityResult.wifi) {
-                          showSnackBar('No Internet connection');
-                          return;
-                        }
-
-                        // Textfield validation
-                        if (!emailController.text.contains('@')) {
-                          showSnackBar('Please enter a valid email Address');
-                          return;
-                        }
-
-                        if (passwordController.text.length <= 8) {
-                          showSnackBar('Password must be at least 8 characters');
-                          return;
-                        }
-
-                        login();
-                      },
-                    ),
-                  ],
+                SizedBox(height: 40),
+                Text(
+                  'WELCOME BACK',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                  ),
                 ),
-              ),
-              MaterialButton(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 10),
-                onPressed: () {
-                  Get.to(() => SignupScreen());
-                },
-                child: Text("Don't have an account, sign-up here"),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.email),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          labelText: 'Email Address',
+                          labelStyle: TextStyle(
+                              fontSize: 14, color: Colors.black), // Label color
+                          hintText: 'Enter your email', // Optional hint text
+                          hintStyle: TextStyle(
+                              color: Colors.black.withOpacity(0.5),
+                              fontSize: 15), // Hint color
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.5), // White border when focused
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.0), // White border when not focused
+                          ),
+                          filled: true,
+                          fillColor: Colors.white, // Fill color
+                        ),
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.black), // Text color
+                      ),
+                      SizedBox(height: 40),
+                      TextField(
+                        controller: passwordController,
+                        obscureText: true,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.password),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          labelText: 'Password',
+                          labelStyle: TextStyle(
+                              fontSize: 14, color: Colors.black), // Label color
+                          hintText: 'Enter your password', // Optional hint text
+                          hintStyle: TextStyle(
+                              color: Colors.black.withOpacity(0.5),
+                              fontSize: 15), // Hint color
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.5), // White border when focused
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                                color: Colors.white,
+                                width: 1.0), // White border when not focused
+                          ),
+                          filled: true,
+                          fillColor: Colors.white, // Fill color
+                        ),
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.black), // Text color
+                      ),
+                      SizedBox(height: 100),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              title: 'LOGIN',
+                              color: Colors.blueAccent,
+                              onPressed: () async {
+                                // Network checking
+                                var connectivityResult =
+                                    await Connectivity().checkConnectivity();
+                                if (connectivityResult !=
+                                        ConnectivityResult.mobile &&
+                                    connectivityResult !=
+                                        ConnectivityResult.wifi) {
+                                  showSnackBar('No Internet connection');
+                                  return;
+                                }
+
+                                // Textfield validation
+                                if (!emailController.text.contains('@')) {
+                                  showSnackBar(
+                                      'Please enter a valid email Address');
+                                  return;
+                                }
+
+                                if (passwordController.text.length <= 8) {
+                                  showSnackBar(
+                                      'Password must be at least 8 characters');
+                                  return;
+                                }
+
+                                login();
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomButton(
+                              title: 'Register',
+                              color: Colors.white,
+                              textColor: Colors.black,
+                              onPressed: () {
+                                // Use a custom route with a swipe animation
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        Duration(milliseconds: 500),
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
+                                      return SignupScreen();
+                                    },
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(1.0, 0.0);
+                                      const end = Offset.zero;
+                                      const curve = Curves.easeInOut;
+                                      var tween = Tween(begin: begin, end: end)
+                                          .chain(CurveTween(curve: curve));
+                                      var offsetAnimation =
+                                          animation.drive(tween);
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

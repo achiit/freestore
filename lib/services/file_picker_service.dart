@@ -22,7 +22,7 @@ class FilePickerService {
   }
 
 //PICKER
-  static Future<FilePickerResult?> pickFile(BuildContext context) async {
+  static Future<FilePickerResult?> pickFile(BuildContext context,String username,String userid) async {
 
     try {
       // Pick an file
@@ -60,7 +60,7 @@ class FilePickerService {
         Navigator.pop(context);
 
         // Take to QrScreen
-        await Get.to(() => QrScreen(cid: cid));
+        await Get.to(() => QrScreen(cid: cid,username: username,  userid: userid));
 
         //Return Path
         return file;

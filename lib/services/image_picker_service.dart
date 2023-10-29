@@ -2,6 +2,8 @@
 
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,17 +19,31 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class ImagePickerService {
-
   @protected
   @mustCallSuper
   void dispose() {
     Hive.close();
   }
+  static Future<void> addURLToUserPosts(String url) async {
+      final _auth = FirebaseAuth.instance;
+      final currentUser = _auth.currentUser;
+      print("the currentuser is ${currentUser!.uid}");
+      if (currentUser != null) {
+        final DatabaseReference userReference = FirebaseDatabase.instance
+            .reference()
+            .child('users/${currentUser.uid}/myposts');
 
+        // Push the new URL to the "myposts" node
+        final newPostRef = userReference.push();
+        newPostRef.set(url);
+
+        print('URL added to user posts: $url');
+      }
+    }
 //PICKER
-  static Future<XFile?> pickImage(BuildContext context) async {
+  static Future<XFile?> pickImage(BuildContext context, String username,String userid) async {
     final ImagePicker _picker = ImagePicker();
-    final List<UserModel> transactions  = [];
+    final List<UserModel> transactions = [];
 
     try {
       // Pick an images
@@ -76,14 +92,22 @@ class ImagePickerService {
           ..date = DateFormat.yMMMd().format(DateTime.now())
           ..received = false;
 
-          final box = Boxes.getTransactions();
-          box.add(transactionMap);
-
+        final box = Boxes.getTransactions();
+        box.add(transactionMap);
+        await addURLToUserPosts(ipfsURL + cid);
         // Popping out the dialog box
         Navigator.pop(context);
 
         // Take to QrScreen
-        await Get.to(() => QrScreen(cid: cid));
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => QrScreen(
+                      cid: cid,
+                      username: username,
+                      userid: userid,
+                    )));
+        //await Get.to(() => QrScreen(cid: cid));
 
         //Return Path
         return image;

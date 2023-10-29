@@ -17,8 +17,7 @@ class _HistoryCardState extends State<HistoryCard> {
   UserModel transaction = UserModel();
 
   void _launchURL(url) async {
-    if (!await launch(url))
-      throw 'Could not launch ${url}';
+    if (!await launch(url)) throw 'Could not launch ${url}';
   }
 
   @override
@@ -32,7 +31,9 @@ class _HistoryCardState extends State<HistoryCard> {
                 'No transaction history',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           )
@@ -53,22 +54,25 @@ class _HistoryCardState extends State<HistoryCard> {
       child: Card(
         margin: EdgeInsets.all(10),
         child: Container(
+          color: Color(0xff6B4DB2).withOpacity(0.4),
           width: double.infinity,
           padding: EdgeInsets.all(10),
-          height: 60,
+          height: 80,
           child: Row(
             children: [
               SizedBox(width: 5),
               Container(
-                height: 40,
-                width: 40,
+                height: 50,
+                width: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: ColorConstants.appColor,
+                  color: Color(0xff010723).withOpacity(0.3),
                 ),
                 child: Center(
                   child: Icon(
-                    (history.received == false) ? Icons.upload_file_rounded : Icons.file_download,
+                    (history.received == false)
+                        ? Icons.upload_file_rounded
+                        : Icons.file_download,
                     color: Colors.white,
                     size: 19,
                   ),
@@ -86,9 +90,9 @@ class _HistoryCardState extends State<HistoryCard> {
                       history.url,
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: ColorConstants.appColor,
+                        color: Color(0xff010723),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -98,7 +102,8 @@ class _HistoryCardState extends State<HistoryCard> {
                     child: Text(
                       history.date,
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                         color: Colors.black45,
                       ),
                     ),
