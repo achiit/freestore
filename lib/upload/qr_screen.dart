@@ -24,7 +24,8 @@ import 'package:url_launcher/url_launcher.dart';
 class QrScreen extends StatefulWidget {
   final String cid;
   final String username;
-  const QrScreen({Key? key, required this.cid, required this.username})
+  final String userid;
+  const QrScreen({Key? key, required this.cid, required this.username,required this.userid})
       : super(key: key);
 
   @override
@@ -47,7 +48,7 @@ class _QrScreenState extends State<QrScreen> {
       if (!await launch(qrUrl)) throw 'Could not launch $qrUrl';
     }
 
-    void uploadUrl(String title, String caption) async {
+    void uploadUrl(String title, String caption,String userid) async {
       try {
         setState(() {
           isUploading = true; // Start the upload, set isUploading to true
@@ -62,6 +63,7 @@ class _QrScreenState extends State<QrScreen> {
           'title': title,
           'caption': caption,
           'url': qrUrl,
+          'userid':userid,
         });
 
         // If the URL is successfully uploaded, show a success message
@@ -410,7 +412,7 @@ class _QrScreenState extends State<QrScreen> {
             ),
             InkWell(
               onTap: () {
-                uploadUrl(titleController.text, captionController.text);
+                uploadUrl(titleController.text, captionController.text,widget.userid);
               },
               child: Container(
                 height: 50,

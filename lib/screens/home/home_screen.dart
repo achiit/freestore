@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sized_box_for_whitespace, prefer_typing_uninitialized_variables, unnecessary_null_comparison, unnecessary_cast, unused_element
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,32 +24,96 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String getUserName = '';
+  String getUserEmail = '';
+  String getUserImage = '';
+  bool loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    DatabaseReference userReference = FirebaseDatabase.instance
+        .ref()
+        .child('users/${_auth.currentUser!.uid}');
+
+    final user = userReference.once().then((DatabaseEvent databaseEvent) {
+      final value = databaseEvent.snapshot.value;
+
+      setState(() {
+        getUserName = (value as Map)['fullname'].toString();
+        getUserImage = (value as Map)['profileImage'].toString();
+        getUserEmail = (value as Map)['email'].toString();
+      });
+
+      loaded = true;
+    });
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstants.appColor,
+      backgroundColor: Color(0xff010723),
       appBar: AppBar(
-        backgroundColor: ColorConstants.appColor,
-        elevation: 1,
-        centerTitle: true,
+        backgroundColor: Color(0xff320482),
+        elevation: 0,
+        //centerTitle: true,
         title: Text(
-          'Box Share',
+          'Free Store',
           style: TextStyle(
             letterSpacing: 1.2,
             color: Colors.white,
-            fontSize: 19,
+            fontSize: 23,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 150,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            height: kIsWeb ? 100 : 150,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(150)),
+              color: Color(0xff320482),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Hello ${getUserName.toUpperCase()},',
+                    style: TextStyle(
+                      letterSpacing: 1.2,
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Utilize our free storage to the fullest. Dont forget to share your work as a Post.',
+                    style: TextStyle(
+                      letterSpacing: 1.2,
+                      color: Color(0xffDBC1FC),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+            child: Container(
+              height: 220,
               width: double.infinity,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
@@ -57,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Expanded(
                       child: CustomHomeButton(
+                        color: Color(0xff7D5BA4).withOpacity(0.7),
                         icon: Icons.upload_file_rounded,
                         text: 'Upload',
                         onPressed: () {
@@ -71,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? SizedBox.shrink()
                         : Expanded(
                             child: CustomHomeButton(
+                              color: Color(0xffAA46B9).withOpacity(0.5),
                               icon: Icons.get_app,
                               text: 'Receive',
                               onPressed: () {
@@ -83,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Expanded(
                       child: CustomHomeButton(
+                        color: Color(0xff5333CC).withOpacity(0.5),
                         icon: Icons.share,
                         text: 'Invite',
                         onPressed: () {
@@ -95,50 +164,52 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 10,
-                top: 5,
-                bottom: 15,
-                right: 10,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    'Recent Transactions',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+          ),
+          SizedBox(height: 25),
+          kIsWeb
+              ? SizedBox()
+              : Padding(
+                  padding: const EdgeInsets.only(
+                    left: 10,
+                    top: 5,
+                    bottom: 15,
+                    right: 10,
                   ),
-                  Expanded(child: Container()),
-                  InkWell(
-                    onTap: () {
-                      Get.to(() => HistoryScreen());
-                    },
-                    child: Icon(
-                      Icons.navigate_next,
-                      color: Colors.white,
-                    ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Recent Transactions',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Expanded(child: Container()),
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => HistoryScreen());
+                        },
+                        child: Icon(
+                          Icons.navigate_next,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            ValueListenableBuilder<Box<UserModel>>(
-              valueListenable: Boxes.getTransactions().listenable(),
-              builder: (context, box, _) {
-                final transactions = box.values.toList().cast<UserModel>();
-                return Expanded(
-                  child: HistoryCard(
-                    transactions: transactions,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+                ),
+          ValueListenableBuilder<Box<UserModel>>(
+            valueListenable: Boxes.getTransactions().listenable(),
+            builder: (context, box, _) {
+              final transactions = box.values.toList().cast<UserModel>();
+              return Expanded(
+                child: HistoryCard(
+                  transactions: transactions,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

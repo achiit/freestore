@@ -41,7 +41,7 @@ class ImagePickerService {
       }
     }
 //PICKER
-  static Future<XFile?> pickImage(BuildContext context, String username) async {
+  static Future<XFile?> pickImage(BuildContext context, String username,String userid) async {
     final ImagePicker _picker = ImagePicker();
     final List<UserModel> transactions = [];
 
@@ -105,6 +105,7 @@ class ImagePickerService {
                 builder: (context) => QrScreen(
                       cid: cid,
                       username: username,
+                      userid: userid,
                     )));
         //await Get.to(() => QrScreen(cid: cid));
 

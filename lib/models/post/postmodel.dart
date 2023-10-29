@@ -3,6 +3,7 @@ class QRData {
   final String username;
   final String title;
   final String caption;
+  final String postedby;
 
-  QRData(this.url, this.username, this.title, this.caption);
+  QRData(this.url, this.username, this.title, this.caption, this.postedby);
 }

@@ -6,7 +6,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:giga_share/models/post/postmodel.dart';
 import 'package:giga_share/resources/color_constants.dart';
-import 'package:giga_share/screens/home/myposts/videopage.dart';
 import 'package:giga_share/widgets/custom_alert.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -27,10 +26,22 @@ class _MyPostState extends State<MyPost> {
   bool downloading = false;
   List<String> qrDataList = [];
 
+  late VideoPlayerController _controller;
+
+  Future<void> initializeVideoPlayer(String videoUrl) async {
+    _controller = VideoPlayerController.network(videoUrl);
+
+    await _controller.initialize();
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+
     fetchQRData();
+    initializeVideoPlayer(
+        "https://ipfs.io/ipfs/bafybeifg6iik4pxxrzldxwt7lebaw6voc6k5u6ux657lbvy3s7mqpumbui");
   }
 
   Future<void> fetchQRData() async {
@@ -72,6 +83,22 @@ class _MyPostState extends State<MyPost> {
     return Stack(
       children: [
         Scaffold(
+          floatingActionButton: _controller != null
+              ? FloatingActionButton(
+                  onPressed: () {
+                    if (_controller.value.isPlaying) {
+                      _controller.pause();
+                    } else {
+                      _controller.play();
+                    }
+                  },
+                  child: Icon(
+                    _controller.value.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                  ),
+                )
+              : null,
           //backgroundColor: ColorConstants.appColor,
           appBar: AppBar(
             centerTitle: true,
@@ -100,11 +127,75 @@ class _MyPostState extends State<MyPost> {
                                 ConnectionState.done) {
                               return Card(
                                 elevation: 0,
+                                //height: 200,
+                                // decoration: BoxDecoration(
+                                //   image: DecorationImage(
+                                //     image: NetworkImage(qrDataList[index].caption,
+                                //         scale: 1.0),
+                                //     fit: BoxFit.cover,
+                                //   ),
+                                // ),
                                 child: Column(
                                   children: [
+                                    // Row(
+                                    //   children: [
+                                    //     CircleAvatar(
+                                    //       child: Text(
+                                    //         ' ${qrDataList[index].url[0].toUpperCase()}',
+                                    //       ),
+                                    //     ),
+                                    //     SizedBox(
+                                    //       width: 8,
+                                    //     ),
+                                    //     Text(
+                                    //       ' ${qrDataList[index].url.toUpperCase()}',
+                                    //       style: GoogleFonts.inter(
+                                    //           fontWeight: FontWeight.bold,
+                                    //           fontSize: 20),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                     SizedBox(
                                       width: 18,
                                     ),
+                                    // Padding(
+                                    //   padding:
+                                    //       const EdgeInsets.only(left: 20.0),
+                                    //   child: Row(
+                                    //     children: [
+                                    //       Text(
+                                    //         '${qrDataList[index].username}',
+                                    //         textAlign: TextAlign.start,
+                                    //         style:
+                                    //             GoogleFonts.inter(fontSize: 20),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
+                                    Center(
+                                      child: _controller != null
+                                          ? AspectRatio(
+                                              aspectRatio:
+                                                  _controller.value.aspectRatio,
+                                              child: VideoPlayer(_controller),
+                                            )
+                                          : CircularProgressIndicator(), // Show loading indicator until video is initialized
+                                    ),
+                                    // floatingActionButton: _controller != null
+                                    //     ? FloatingActionButton(
+                                    //         onPressed: () {
+                                    //           if (_controller.value.isPlaying) {
+                                    //             _controller.pause();
+                                    //           } else {
+                                    //             _controller.play();
+                                    //           }
+                                    //         },
+                                    //         child: Icon(
+                                    //           _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                                    //         ),
+                                    //       )
+                                    //     : null,
+                                    SizedBox(height: 40),
                                     Image.network(
                                       qrDataList[index],
                                       errorBuilder:
@@ -114,34 +205,28 @@ class _MyPostState extends State<MyPost> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Tap Me',
+                                              'Currently we support only images! But still you can view it in the browser...',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize: 30,
                                                   fontWeight: FontWeight.bold),
                                             ),
-                                            CircleAvatar(
-                                              radius: 100,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              VideoPage(
-                                                                url: qrDataList[
-                                                                    index],
-                                                              )));
-                                                },
-                                                child: Lottie.asset(
-                                                    "assets/lottie/play video.json",
-                                                    height: 200),
-                                              ),
-                                            )
+                                            Lottie.asset(
+                                                "assets/lottie/error.json",
+                                                height: 200)
                                           ],
                                         );
                                       },
                                     ),
+                                    //THIS IS THE CAPTION
+                                    // Row(
+                                    //   children: [
+                                    //     Text(
+                                    //       '${qrDataList[index].title[0].toUpperCase()}${qrDataList[index].title.substring(1)}',
+                                    //       style:
+                                    //           GoogleFonts.inter(fontSize: 20),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                   ],
                                 ),
                               );
@@ -234,7 +319,32 @@ class _MyPostState extends State<MyPost> {
               onpressed: () {
                 viewDownloadedContent();
               },
-            );
+            ); /* AlertDialog(
+              title: Text('Download Successful'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('The content has been downloaded.'),
+                  SizedBox(height: 10),
+                  Text('Downloaded to: $downloadedFilePath'),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    viewDownloadedContent();
+                  },
+                  child: Text('Show'),
+                ),
+              ],
+            ); */
           },
         );
       } else {
@@ -276,7 +386,17 @@ class _MyPostState extends State<MyPost> {
     return filePath;
   }
 
+  // void viewDownloadedContent() {
+  //   if (downloadedFilePath.isNotEmpty) {
+  //     // Use the open_file package to open the downloaded file
+  //     OpenFile.open(downloadedFilePath);
+  //   }
+  // }
+
   Future<void> loadImage(String url) async {
+    // You can add any custom logic for image loading here.
+    // This can be an HTTP request, decoding an image, etc.
+    // For this example, we're using Future.delayed to simulate loading.
     await Future.delayed(Duration(seconds: 2));
   }
 

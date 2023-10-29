@@ -3,9 +3,12 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:giga_share/models/post/postmodel.dart';
 import 'package:giga_share/resources/color_constants.dart';
+import 'package:giga_share/screens/home/myposts/videopage.dart';
+import 'package:giga_share/screens/userscreen/userscreen.dart';
 import 'package:giga_share/widgets/custom_alert.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -49,8 +52,9 @@ class _MintingScreenState extends State<MintingScreen> {
           String title = value['title'] ?? 'No Title';
           String caption = value['caption'] ?? 'No Caption';
           String url = value['url'].toString();
+          String uid = value['userid'].toString();
 
-          qrDataList.add(QRData(username, title, caption, url));
+          qrDataList.add(QRData(username, title, caption, url, uid));
         } else {
           print('Invalid data format: $value');
         }
@@ -59,7 +63,7 @@ class _MintingScreenState extends State<MintingScreen> {
     print("the qr list is ${qrDataList[0].title}");
     setState(() {});
   }
-  
+
   @override
   @override
   Widget build(BuildContext context) {
@@ -67,153 +71,253 @@ class _MintingScreenState extends State<MintingScreen> {
       children: [
         Scaffold(
           //backgroundColor: ColorConstants.appColor,
+          backgroundColor: Color(0xff010723).withOpacity(0.8),
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            centerTitle: true,
-            backgroundColor:
-                ColorConstants.appColor, // Change the app bar color
-            title: Text(
-              'Public Files',
-              style: TextStyle(color: Colors.white),
+            toolbarHeight: kIsWeb ? 170 : 120,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(130),
+              ),
+            ),
+            backgroundColor: Color(0xff320482),
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'PUBLIC CONTENT,',
+                      style: TextStyle(
+                        letterSpacing: 1.2,
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Subscribe to your favourite\ncreators to download their content',
+                  style: TextStyle(
+                    letterSpacing: 1.2,
+                    color: Color(0xffDBC1FC),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  softWrap: true, // Allow text to wrap to the next line
+                ),
+              ],
             ),
           ),
-          body: ListView.builder(
+
+          body: ListView.separated(
+            separatorBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                color: Colors.white,
+                height: 2,
+              ),
+            ),
             itemCount: qrDataList.length,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  elevation: 5, // Add some elevation for a card-like effect
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: FutureBuilder(
-                          future: loadImage(qrDataList[index].url),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              return Card(
-                                elevation: 0,
-                                //height: 200,
-                                // decoration: BoxDecoration(
-                                //   image: DecorationImage(
-                                //     image: NetworkImage(qrDataList[index].caption,
-                                //         scale: 1.0),
-                                //     fit: BoxFit.cover,
-                                //   ),
-                                // ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          child: Text(
-                                            ' ${qrDataList[index].url[0].toUpperCase()}',
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 8,
-                                        ),
-                                        Text(
-                                          ' ${qrDataList[index].url.toUpperCase()}',
-                                          style: GoogleFonts.inter(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: 18,
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 20.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '${qrDataList[index].username}',
-                                            textAlign: TextAlign.start,
-                                            style:
-                                                GoogleFonts.inter(fontSize: 20),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Image.network(
-                                      qrDataList[index].caption,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Currently we support only images! But still you can view it in the browser...',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Lottie.asset(
-                                                "assets/lottie/error.json",
-                                                height: 200)
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                    //THIS IS THE CAPTION
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '${qrDataList[index].title[0].toUpperCase()}${qrDataList[index].title.substring(1)}',
-                                          style:
-                                              GoogleFonts.inter(fontSize: 20),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                child: Text('Error loading image'),
-                              );
-                            } else {
-                              return Center(
-                                child:
-                                    Lottie.asset("assets/lottie/loading.json"),
-                              );
-                            }
-                          },
-                        ),
+              if (qrDataList.isNotEmpty && index < qrDataList.length) {
+                final qrData = qrDataList[index];
+                return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Card(
+                      color: Colors.transparent,
+                      elevation: 5, // Add elevation for a 3D look
+                      shadowColor: Color(0xff6B4DB2)
+                          .withOpacity(0.8), // Color for the shadow
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Column(
                         children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              launch(
-                                  qrDataList[index].caption); // Open in browser
-                            },
-                            child: Text('Open in Browser'),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FutureBuilder(
+                              future: loadImage(qrData.url),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  return Card(
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    color: Colors
+                                        .transparent, // Use your theme color
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UserScreen(
+                                                        uid: qrData.postedby),
+                                              ),
+                                            );
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 25,
+                                                  backgroundColor: Colors
+                                                      .white, // Change this to your theme color
+                                                  child: Center(
+                                                    child: Text(
+                                                      ' ${qrData.url[0].toUpperCase()}',
+                                                      style: GoogleFonts.inter(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 30,
+                                                        color: ColorConstants
+                                                            .appColor, // Use your theme color
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 12),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Wrap(
+                                                      children: [
+                                                        Text(
+                                                          ' ${qrData.url.toUpperCase()}',
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 20,
+                                                            color: Colors
+                                                                .white, // Change this to your theme color
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(width: 18),
+                                                    Wrap(
+                                                      children: [
+                                                        Text(
+                                                          '${qrData.title[0].toUpperCase()}${qrData.title.substring(1)}',
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                            fontSize: 20,
+                                                            color: Colors
+                                                                .white, // Change this to your theme color
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        Image.network(
+                                          qrData.caption,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return Center(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Tap Me',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontSize: 30,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors
+                                                          .white, // Change this to your theme color
+                                                    ),
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              VideoPage(
+                                                            url: qrData.caption,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Lottie.asset(
+                                                      "assets/lottie/play video.json",
+                                                      height: 200,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error loading image'),
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Lottie.asset(
+                                        "assets/lottie/loading.json"),
+                                  );
+                                }
+                              },
+                            ),
                           ),
-                          SizedBox(width: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              downloadFromIPFS(
-                                  qrDataList[index].caption,
-                                  qrDataList[index]
-                                      .hashCode); // Download the image
-                            },
-                            child: Text('Download'),
-                          ),
+                          SizedBox(height: 10),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     ElevatedButton(
+                          //       onPressed: () {
+                          //         launch(qrData.caption); // Open in browser
+                          //       },
+                          //       child: Text('Open in Browser'),
+                          //     ),
+                          //     SizedBox(width: 16),
+                          //     ElevatedButton(
+                          //       onPressed: () {
+                          //         downloadFromIPFS(
+                          //           qrData.caption,
+                          //           qrData.hashCode,
+                          //         ); // Download the image
+                          //       },
+                          //       child: Text('Download'),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              );
+                    ));
+              } else {
+                return SizedBox
+                    .shrink(); // Return an empty widget if qrDataList is empty or index is out of range
+              }
             },
           ),
         ),

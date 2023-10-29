@@ -54,6 +54,7 @@ class _HistoryCardState extends State<HistoryCard> {
       child: Card(
         margin: EdgeInsets.all(10),
         child: Container(
+          color: Color(0xff6B4DB2).withOpacity(0.4),
           width: double.infinity,
           padding: EdgeInsets.all(10),
           height: 80,
@@ -61,11 +62,11 @@ class _HistoryCardState extends State<HistoryCard> {
             children: [
               SizedBox(width: 5),
               Container(
-                height: 40,
-                width: 40,
+                height: 50,
+                width: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: ColorConstants.appColor,
+                  color: Color(0xff010723).withOpacity(0.3),
                 ),
                 child: Center(
                   child: Icon(
@@ -89,9 +90,9 @@ class _HistoryCardState extends State<HistoryCard> {
                       history.url,
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: ColorConstants.appColor,
+                        color: Color(0xff010723),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -101,7 +102,8 @@ class _HistoryCardState extends State<HistoryCard> {
                     child: Text(
                       history.date,
                       style: TextStyle(
-                        fontSize: 12.5,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
                         color: Colors.black45,
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:giga_share/resources/image_resources.dart';
 
@@ -18,54 +19,82 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstants.appColor,
+      backgroundColor: Color(0xff010723),
       appBar: AppBar(
-        backgroundColor: ColorConstants.appColor,
-        elevation: 1,
-        centerTitle: true,
-        title: const Text(
-          'Paste Bin',
+        backgroundColor: Color(0xff320482),
+        elevation: 0,
+        //centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Paste Bin,',
           style: TextStyle(
             letterSpacing: 1.2,
             color: Colors.white,
-            fontSize: 19,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 5,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            height: kIsWeb ? 80 : 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(150)),
+              color: Color(0xff320482),
             ),
-            const Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Create and share any text format on IPFS.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Create and share any text format on IPFS.',
+                    style: TextStyle(
+                      letterSpacing: 1.2,
+                      color: Color(0xffDBC1FC),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
+          ),
+          // const Align(
+          //   alignment: Alignment.center,
+          //   child: Text(
+          //     'Create and share any text format on IPFS.',
+          //     textAlign: TextAlign.center,
+          //     style: TextStyle(
+          //         color: Colors.white,
+          //         fontWeight: FontWeight.bold,
+          //         fontSize: 16),
+          //   ),
+          // ),
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: const Text(
               'FILENAME (OPTIONAL)',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextField(
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
               controller: _fileNameController,
               keyboardType: TextInputType.multiline,
               maxLines: 1,
@@ -90,20 +119,26 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
                   ),
                   hintStyle: TextStyle(color: Colors.white)),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: const Text(
               'CONTENT',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TextField(
                 controller: _textController,
                 keyboardType: TextInputType.multiline,
@@ -132,10 +167,13 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
                     hintStyle: TextStyle(color: Colors.white)),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton.icon(
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
                 primary: ColorConstants.messageErrorBgColor,
@@ -143,7 +181,7 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
               ),
               onPressed: () async {
                 await TextFileService.uploadTextFile(context,
-                    _textController.text, _fileNameController.text, '');
+                    _textController.text, _fileNameController.text, '', "");
                 _textController.text = '';
                 _fileNameController.text = '';
               },
@@ -160,9 +198,9 @@ class _PasteBinScreenState extends State<PasteBinScreen> {
                 height: 16,
                 color: Colors.white,
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

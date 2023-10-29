@@ -25,7 +25,7 @@ class TextFileService {
   }
 
 //PICKER
-  static Future<void> uploadTextFile(BuildContext context, String text, String fileName,String username) async {
+  static Future<void> uploadTextFile(BuildContext context, String text, String fileName,String username,String userid) async {
     final List<UserModel> transactions = [];
 
     try {
@@ -91,7 +91,7 @@ class TextFileService {
         Navigator.pop(context);
 
         // Take to QrScreen
-        await Get.to(() => QrScreen(cid: cid, username: username));
+        await Get.to(() => QrScreen(cid: cid, username: username, userid: userid));
       }
     } catch (e) {
       debugPrint('Error at images picker: $e');

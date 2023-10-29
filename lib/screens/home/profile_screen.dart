@@ -52,19 +52,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstants.appColor,
+      backgroundColor: Color(0xff010723),
       appBar: AppBar(
-        backgroundColor: ColorConstants.appColor,
-        elevation: 1,
-        centerTitle: true,
-        title: Text(
-          'PROFILE',
-          style: TextStyle(
-            letterSpacing: 1.2,
-            color: Colors.white,
-            fontSize: 19,
-            fontWeight: FontWeight.bold,
+        toolbarHeight: MediaQuery.of(context).size.height * 0.1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
           ),
+        ),
+        backgroundColor: Color(0xff320482),
+        elevation: 0,
+        //centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Profile',
+              style: TextStyle(
+                letterSpacing: 1.2,
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Access all your files that you stored',
+              style: TextStyle(
+                letterSpacing: 1.2,
+                color: Colors.grey,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
       body: Column(
